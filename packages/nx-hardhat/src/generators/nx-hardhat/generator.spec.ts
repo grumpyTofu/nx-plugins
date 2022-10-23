@@ -5,16 +5,16 @@ import generator from './generator';
 import { NxHardhatGeneratorSchema } from './schema';
 
 describe('nx-hardhat generator', () => {
-  let appTree: Tree;
+  let libTree: Tree;
   const options: NxHardhatGeneratorSchema = { name: 'test' };
 
   beforeEach(() => {
-    appTree = createTreeWithEmptyWorkspace();
+    libTree = createTreeWithEmptyWorkspace();
   });
 
   it('should run successfully', async () => {
-    await generator(appTree, options);
-    const config = readProjectConfiguration(appTree, 'test');
+    await generator(libTree, options);
+    const config = readProjectConfiguration(libTree, 'test');
     expect(config).toBeDefined();
   });
 });
