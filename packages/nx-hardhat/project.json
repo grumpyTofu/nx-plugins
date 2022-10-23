@@ -1,0 +1,61 @@
+{
+  "name": "nx-hardhat",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/nx-hardhat/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/nx-hardhat",
+        "main": "packages/nx-hardhat/src/index.ts",
+        "tsConfig": "packages/nx-hardhat/tsconfig.lib.json",
+        "assets": [
+          "packages/nx-hardhat/*.md",
+          {
+            "input": "./packages/nx-hardhat/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/nx-hardhat/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./packages/nx-hardhat",
+            "glob": "generators.json",
+            "output": "."
+          },
+          {
+            "input": "./packages/nx-hardhat",
+            "glob": "executors.json",
+            "output": "."
+          }
+        ]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/nx-hardhat/**/*.ts",
+          "packages/nx-hardhat/generators.json",
+          "packages/nx-hardhat/executors.json",
+          "packages/nx-hardhat/package.json"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/nx-hardhat/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

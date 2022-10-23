@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "name": "nx-hardhat",
+  "version": "0.0.1",
+  "generators": {
+    "nx-hardhat": {
+      "factory": "./src/generators/nx-hardhat/generator",
+      "schema": "./src/generators/nx-hardhat/schema.json",
+      "description": "nx-hardhat generator"
+    }
+  }
+}
