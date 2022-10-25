@@ -1,34 +1,36 @@
-import '@typechain/hardhat'
-import '@nomiclabs/hardhat-ethers'
-import '@nomiclabs/hardhat-solhint'
-import '@nomiclabs/hardhat-waffle'
-import '@nomiclabs/hardhat-etherscan'
-import 'hardhat-deploy'
-import 'hardhat-gas-reporter'
-import 'hardhat-contract-sizer'
-import 'solidity-coverage'
-import 'tsconfig-paths/register'
+import '@typechain/hardhat';
+import '@nomicfoundation/hardhat-chai-matchers';
+import '@nomiclabs/hardhat-ethers';
+import '@nomiclabs/hardhat-solhint';
+import '@nomiclabs/hardhat-etherscan';
+import '@openzeppelin/hardhat-upgrades';
+import 'hardhat-deploy';
+import 'hardhat-gas-reporter';
+import 'hardhat-contract-sizer';
+import 'solidity-coverage';
+import 'tsconfig-paths/register';
 
-import { HardhatUserConfig } from 'hardhat/types'
+import { HardhatUserConfig, task } from 'hardhat/config';
+import { deploy } from './src/scripts/deploy';
+import * as dotenv from 'dotenv';
 
-const walletMnemonic = process.env.WALLET_MNEMONIC || ''
-const etherscanApiKey = process.env.ETHERSCAN_API_KEY || ''
-const ropstenRpcUrl = process.env.ROPSTEN_RPC_URL || ''
-const ropstenMnemonic = process.env.ROPSTEN_MNEMONIC || ''
-const testReportGas = process.env.TEST_REPORT_GAS || '1'
+dotenv.config({
+  path: '<%= offsetFromRoot %>.env',
+});
+
+task("deploy", "Deploys a contract", deploy).addParam("name", "The name of the contract");
+
+const walletMnemonic = process.env.WALLET_MNEMONIC || '';
+const etherscanApiKey = process.env.ETHERSCAN_API_KEY || '';
+const goerliRpcUrl = process.env.GOERLI_DEVNET || '';
+const goerliDevAccount = process.env.GOERLI_DEV_ACCOUNT || '';
+const testReportGas = process.env.TEST_REPORT_GAS || '1';
 
 const config: HardhatUserConfig = {
   defaultNetwork: 'hardhat',
   networks: {
     // Hardhat dev Ethereum network node running on localhost
-    hardhat: {
-      chainId: 1337,
-      accounts: {
-        count: 100,
-        mnemonic: walletMnemonic,
-      },
-      initialBaseFeePerGas: 0,
-    },
+    hardhat: {},
     // Hardhat dev Ethereum network node running in local dev Kubernetes
     hardhatK8s: {
       chainId: 1337,
@@ -38,16 +40,10 @@ const config: HardhatUserConfig = {
       },
       url: 'http://ethereum-node:8545',
     },
-    ropsten: {
-      chainId: 3,
-      gas: 5000000,
-      gasPrice: 50000000000,
-      gasMultiplier: 1,
-      timeout: 90000,
-      url: ropstenRpcUrl,
-      accounts: {
-        mnemonic: ropstenMnemonic,
-      },
+    goerli: {
+      chainId: 5,
+      url: goerliRpcUrl,
+      accounts: [goerliDevAccount],
     },
   },
   gasReporter: {
@@ -58,7 +54,11 @@ const config: HardhatUserConfig = {
     apiKey: etherscanApiKey,
   },
   solidity: {
-    version: '0.8.9',
+    compilers: [
+      {
+        version: '0.8.9',
+      },
+    ],
   },
   paths: {
     root: './',
@@ -66,7 +66,12 @@ const config: HardhatUserConfig = {
     tests: 'src/tests',
     cache: '<%= offsetFromRoot %>dist/<%= projectRoot %>/cache',
     artifacts: '<%= offsetFromRoot %>dist/<%= projectRoot %>/artifacts',
-  }
-}
+  },
+  typechain: {
+    outDir: 'src/types',
+    target: 'ethers-v5',
+    alwaysGenerateOverloads: false, // should overloads with full signatures like deposit(uint256) be generated always, even if there are no overloads?
+  },
+};
 
-export default config
+export default config;

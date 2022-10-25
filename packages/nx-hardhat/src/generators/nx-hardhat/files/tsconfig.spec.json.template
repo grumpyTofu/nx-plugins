@@ -3,8 +3,10 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "<%= offsetFromRoot %>dist/out-tsc",
-    "types": ["mocha", "chai", "node"]
+    "types": ["mocha", "chai", "node"],
+    "composite": true,
+    "declaration": true,
   },
   "files": ["hardhat.config.ts"],
-  "include": ["./test"]
+  "include": ["./test", "./scripts"]
 }

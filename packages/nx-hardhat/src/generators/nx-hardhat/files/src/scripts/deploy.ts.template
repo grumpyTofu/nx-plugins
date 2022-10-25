@@ -1,54 +1,40 @@
-import { ethers } from 'hardhat'
+import '@nomiclabs/hardhat-ethers';
+import '@openzeppelin/hardhat-upgrades';
+import * as hre from 'hardhat';
+import { HardhatRuntimeEnvironment } from 'hardhat/types';
 
-const getFactories = async () => {
-  const erc20Factory = await ethers.getContractFactory('ERC20')
-  return { erc20Factory  }
+export interface DeployArgs {
+  name: string;
 }
 
-const deployContracts = async ({
-  erc20Factory,
-}) => {
-  const erc20 = await erc20Factory.deploy('Test ERC20', 'T20')
-  return { erc20 }
-}
-
-const printContractAddresses = ({ erc20 }) => {
-  console.log('ERC20 address:', erc20.address)
-}
-
-async function main() {
-  const [deployer] = await ethers.getSigners()
-  const network = await ethers.provider.getNetwork()
+export const deploy = async (
+  { name }: DeployArgs,
+  { ethers }: HardhatRuntimeEnvironment
+) => {
+  const [owner] = await ethers.getSigners();
+  const network = await ethers.provider.getNetwork();
 
   console.log(
-    `Deploying contracts to ${network.name} (${network.chainId}) with account: ${deployer.address}`,
-    deployer.address,
-  )
+    `Deploying contracts to ${network.name} (${network.chainId}) with account: ${owner.address}`,
+    owner.address
+  );
 
-  console.log('Account balance:', (await deployer.getBalance()).toString())
+  const balance = await owner.getBalance();
+  console.log('Account balance:', balance.toString());
 
-  const factories = await getFactories()
+  const contractFactory = await ethers.getContractFactory(name);
 
-  // Do something different for local development
-  if (network.chainId === 1337) {
-    const { erc20 } = await deployContracts({
-      ...factories,
+  const contract = await ethers.deploy(contractFactory);
+  return contract.deployed();
+};
+
+if (require.main === module) {
+  deploy({ name: 'CustomToken' }, hre)
+    .then((contract) => {
+      console.log('Contract deployed to:', contract.address);
     })
-    printContractAddresses({ erc20 })
-
-  } else if (network.chainId === 3) {
-    // Ropsten testnet
-
-    const { erc20 } = await deployContracts({
-      ...factories,
+    .catch((error) => {
+      console.error('An error occurred while deploying contract', error);
     })
-    printContractAddresses({ erc20 })
-  }
+    .finally(() => process.exit(1));
 }
-
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error)
-    process.exit(1)
-  })

@@ -3,7 +3,9 @@
   "compilerOptions": {
     "strict": true,
     "outDir": "<%= offsetFromRoot %>dist/out-tsc",
-    "types": ["node"]
+    "types": ["node"],
+    "composite": true,
+    "declaration": true,
   },
   "files": ["./hardhat.config.ts"],
   "include": ["./scripts"]

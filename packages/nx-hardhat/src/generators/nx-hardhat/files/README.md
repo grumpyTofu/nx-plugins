@@ -63,6 +63,6 @@ The repo comes with and example config in `.env.dist`. These represent the defau
 | HARDHAT_LOGGING   | 1       | Logger switch                                                           |
 | WALLET_MNEMONIC   | -       | Custom wallet mnemonic for local dev (for Metamask testing convenience) |
 | ETHERSCAN_API_KEY | -       | API key for etherscan. Used for deployed contract verification.         |
-| ROPSTEN_RPC_URL   | -       | RPC URL for ropsten testnet deploy                                      |
-| ROPSTEN_MNEMONIC  | -       | Wallet mnemonic for ropsten deploy                                      |
+| GOERLI_RPC_URL   | -       | RPC URL for goerli testnet deploy                                      |
+| GOERLI_DEV_ACCOUNT  | -       | Wallet private key for goerli deploy                                      |
 | TEST_REPORT_GAS   | 1       | Report gas usage after test                                             |

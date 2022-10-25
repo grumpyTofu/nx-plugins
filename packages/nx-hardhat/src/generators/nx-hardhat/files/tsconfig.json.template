@@ -5,7 +5,8 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "target": "es2018",
-    "module": "commonjs"
+    "module": "commonjs",
+    "resolveJsonModule": true
   },
   "references": [
     {
