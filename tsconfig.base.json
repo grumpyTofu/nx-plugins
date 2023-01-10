@@ -16,6 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@nx-plugins/common": ["packages/common/src/index.ts"],
+      "@spyre-dev/mongo-migrate": ["packages/mongo-migrate/src/index.ts"],
       "@spyre-dev/nx-hardhat": ["packages/nx-hardhat/src/index.ts"]
     }
   },

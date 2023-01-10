@@ -2,11 +2,15 @@
   "name": "nx-plugins",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
+  "scripts": {
+    "serve:coverage": "http-server coverage",
+    "test:coverage": "nx run-many --all --target=test --codeCoverage"
+  },
   "private": true,
   "dependencies": {
     "@angular-devkit/schematics": "^14.2.6",
     "@swc/helpers": "~0.4.11",
+    "mongoose": "^6.8.3",
     "shelljs": "^0.8.5",
     "tslib": "^2.3.0"
   },
