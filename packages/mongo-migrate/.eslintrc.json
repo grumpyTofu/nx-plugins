@@ -20,6 +20,13 @@
       "rules": {
         "@nrwl/nx/nx-plugin-checks": "error"
       }
+    },
+    {
+      "files": ["**/*/files/**/*.ts"],
+      "rules": {
+        "@nrwl/nx/enforce-module-boundaries": "off",
+        "@typescript-eslint/no-unused-vars": "off"
+      }
     }
   ]
 }
