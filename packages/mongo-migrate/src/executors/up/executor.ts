@@ -3,18 +3,19 @@ import {
   ProjectConfiguration,
   ProjectGraphProjectNode,
 } from '@nrwl/devkit';
-import { Database } from '../../data/db';
-import { getNxProject } from '../../utils/nx';
-import { validateMigrationInitialization } from '../../utils/project';
-import { UpExecutorSchema } from './schema';
-
-import * as path from 'path';
-import { readdirSync, readFileSync } from 'fs';
+import { join } from 'path';
+import { readFileSync } from 'fs';
+import { sync } from 'glob';
 import mongoose from 'mongoose';
+
+import { UpExecutorSchema } from './schema';
+import { Database } from '../../data/db';
 import {
   MigrationDocument,
   migrationSchema,
 } from '../../data/migration.schema';
+import { getNxProject } from '../../utils/nx';
+import { validateMigrationInitialization } from '../../utils/project';
 import { hashFile } from '../../utils/common';
 
 const validateAppliedMigrations = async (
@@ -24,7 +25,7 @@ const validateAppliedMigrations = async (
 ) => {
   if (!filename) throw `Migration file ${migration.filename} is missing`;
 
-  const file = readFileSync(path.join(migrationDirectory, filename));
+  const file = readFileSync(join(migrationDirectory, filename));
   const fileHash = hashFile(file);
 
   if (migration.hash !== fileHash)
@@ -46,7 +47,7 @@ const applyMigration = async ({
   migrationDirectory,
   migration,
 }: ApplyMigrationArgs) => {
-  const migrationPath = path.resolve(migrationDirectory, migration);
+  const migrationPath = join(migrationDirectory, migration);
   const migrationImport = await import(migrationPath);
 
   if (!migrationImport.default) throw 'Malformed migration file';
@@ -74,7 +75,8 @@ export default async function runExecutor(
 
   validateMigrationInitialization(project);
 
-  const config = await import(path.join(context.root, 'migration.config'));
+  const configPath = join(context.root, 'migration.config');
+  const config = await import(configPath);
   const db = new Database(config.default);
   await db.connect();
 
@@ -84,20 +86,18 @@ export default async function runExecutor(
     db.migrationCollection
   );
 
-  const migrationDirectory = path.join(
+  const migrationDirectory = join(
     project.data.root,
     project.data['migrationDirectory']
   );
 
   // get migrations from migrations directory, filter .gitkeep, and sort oldest to newest
-  const migrations = readdirSync(migrationDirectory)
-    .filter((name) => name !== '.gitkeep')
-    .sort((a, b) => {
-      const [timestampA] = a.split('-');
-      const [timestampB] = b.split('-');
+  const migrations = sync(join(migrationDirectory, '*.ts')).sort((a, b) => {
+    const [timestampA] = a.split('-');
+    const [timestampB] = b.split('-');
 
-      return parseInt(timestampA) - parseInt(timestampB);
-    });
+    return parseInt(timestampA) - parseInt(timestampB);
+  });
 
   if (migrations.length === 0) {
     console.error(

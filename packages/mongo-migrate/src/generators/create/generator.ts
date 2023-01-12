@@ -5,7 +5,8 @@ import {
   offsetFromRoot,
   Tree,
 } from '@nrwl/devkit';
-import * as path from 'path';
+import { join } from 'path';
+
 import { getNxProject } from '../../utils/nx';
 import { validateMigrationInitialization } from '../../utils/project';
 import { CreateMigrationGeneratorSchema } from './schema';
@@ -28,8 +29,8 @@ function addFiles(tree: Tree, options: NormalizedSchema) {
   };
   generateFiles(
     tree,
-    path.join(__dirname, 'files'),
-    path.join(options.projectRoot, options.migrationDirectory),
+    join(__dirname, 'files'),
+    join(options.projectRoot, options.migrationDirectory),
     templateOptions
   );
 }

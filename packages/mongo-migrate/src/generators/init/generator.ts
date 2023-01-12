@@ -5,8 +5,9 @@ import {
   Tree,
   updateProjectConfiguration,
 } from '@nrwl/devkit';
-import * as fs from 'fs';
-import * as path from 'path';
+import { readFileSync } from 'fs';
+import { join } from 'path';
+
 import { getNxProject } from '../../utils/nx';
 import { InitGeneratorSchema } from './schema';
 
@@ -23,7 +24,7 @@ const addFiles = (tree: Tree, options: NormalizedSchema) => {
     template: '',
     timestamp: now.getTime(),
   };
-  generateFiles(tree, path.join(__dirname, 'files'), '', templateOptions);
+  generateFiles(tree, join(__dirname, 'files'), '', templateOptions);
 };
 
 export default async function (
@@ -34,7 +35,7 @@ export default async function (
 
   const root = project.data.root;
 
-  const projectConfigFile = fs.readFileSync(path.join(root, 'project.json'), {
+  const projectConfigFile = readFileSync(join(root, 'project.json'), {
     encoding: 'utf-8',
   });
   const projectConfig = JSON.parse(projectConfigFile);
@@ -70,7 +71,7 @@ export default async function (
     migrationDirectory,
   });
 
-  tree.write(`${path.join(root, migrationDirectory)}/.gitkeep`, '');
+  tree.write(`${join(root, migrationDirectory)}/.gitkeep`, '');
 
   await formatFiles(tree);
 }

@@ -1,12 +1,12 @@
-import { getNxProject } from '../../utils/nx';
-import { StatusExecutorSchema } from './schema';
-
-import * as path from 'path';
-import { validateMigrationInitialization } from '../../utils/project';
-import mongoose from 'mongoose';
 import { ExecutorContext } from '@nrwl/devkit';
+import mongoose from 'mongoose';
+import { join } from 'path';
+
 import { migrationSchema } from '../../data/migration.schema';
 import { Database } from '../../data/db';
+import { validateMigrationInitialization } from '../../utils/project';
+import { getNxProject } from '../../utils/nx';
+import { StatusExecutorSchema } from './schema';
 
 export default async function runExecutor(
   options: StatusExecutorSchema,
@@ -16,7 +16,8 @@ export default async function runExecutor(
 
   validateMigrationInitialization(project);
 
-  const config = await import(path.join(context.root, 'migration.config'));
+  const configPath = join(context.root, 'migration.config');
+  const config = await import(configPath);
   const db = new Database(config.default);
   await db.connect();
 
@@ -34,7 +35,7 @@ export default async function runExecutor(
   console.log(`Latest migration:`);
   console.log(`\tId: ${latest.id}`);
   console.log(
-    `\tFilename: ${path.join(
+    `\tFilename: ${join(
       project.data.root,
       project.data['migrationDirectory'],
       latest.filename

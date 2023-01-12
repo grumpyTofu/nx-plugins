@@ -1,16 +1,16 @@
 import { ExecutorContext } from '@nrwl/devkit';
-import { Database } from '../../data/db';
-import { getNxProject } from '../../utils/nx';
-import { validateMigrationInitialization } from '../../utils/project';
-import { DownExecutorSchema } from './schema';
-
-import * as path from 'path';
+import { join } from 'path';
 import { readFileSync } from 'fs';
 import mongoose from 'mongoose';
+
+import { Database } from '../../data/db';
 import {
   MigrationDocument,
   migrationSchema,
 } from '../../data/migration.schema';
+import { getNxProject } from '../../utils/nx';
+import { validateMigrationInitialization } from '../../utils/project';
+import { DownExecutorSchema } from './schema';
 import { hashFile } from '../../utils/common';
 
 export default async function runExecutor(
@@ -21,7 +21,8 @@ export default async function runExecutor(
 
   validateMigrationInitialization(project);
 
-  const config = await import(path.join(context.root, 'migration.config'));
+  const configPath = join(context.root, 'migration.config');
+  const config = await import(configPath);
   const db = new Database(config.default);
   await db.connect();
 
@@ -31,7 +32,7 @@ export default async function runExecutor(
     db.migrationCollection
   );
 
-  const migrationDirectory = path.join(
+  const migrationDirectory = join(
     project.data.root,
     project.data['migrationDirectory']
   );
@@ -48,10 +49,7 @@ export default async function runExecutor(
   }
 
   // get migration file associated with latest migration
-  const latestMigrationFilePath = path.join(
-    migrationDirectory,
-    latest.filename
-  );
+  const latestMigrationFilePath = join(migrationDirectory, latest.filename);
   const file = readFileSync(latestMigrationFilePath);
   const fileHash = hashFile(file);
 
