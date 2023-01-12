@@ -1,4 +1,4 @@
-export interface MongoMigrateGeneratorSchema {
+export interface CreateMigrationGeneratorSchema {
   targetProject: string;
-  migrationDirectory?: string;
+  schemaless: boolean
 }

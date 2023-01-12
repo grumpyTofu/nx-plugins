@@ -3,16 +3,17 @@ import {
   generateFiles,
   names,
   offsetFromRoot,
-  readCachedProjectGraph,
   Tree,
-  updateProjectConfiguration,
 } from '@nrwl/devkit';
 import * as path from 'path';
-import { MongoMigrateGeneratorSchema } from './schema';
+import { getNxProject } from '../../utils/nx';
+import { validateMigrationInitialization } from '../../utils/project';
+import { CreateMigrationGeneratorSchema } from './schema';
 
-interface NormalizedSchema extends MongoMigrateGeneratorSchema {
+interface NormalizedSchema extends CreateMigrationGeneratorSchema {
   projectName: string;
   projectRoot: string;
+  migrationDirectory: string;
 }
 
 function addFiles(tree: Tree, options: NormalizedSchema) {
@@ -21,60 +22,37 @@ function addFiles(tree: Tree, options: NormalizedSchema) {
     ...options,
     ...names(options.projectName),
     offsetFromRoot: offsetFromRoot(options.projectRoot),
+    schemaless: options.schemaless,
     template: '',
     timestamp: now.getTime(),
   };
   generateFiles(
     tree,
     path.join(__dirname, 'files'),
-    options.projectRoot,
+    path.join(options.projectRoot, options.migrationDirectory),
     templateOptions
   );
 }
 
 export default async function (
   tree: Tree,
-  { targetProject, migrationDirectory = 'migrate' }: MongoMigrateGeneratorSchema
+  { targetProject, schemaless }: CreateMigrationGeneratorSchema
 ) {
-  const graph = readCachedProjectGraph();
-  const project = graph.nodes[targetProject];
-
-  if (!project) throw 'Project not found.';
+  const project = getNxProject(targetProject);
 
   const root = project.data.root;
 
-  const migrationOptions = {
-    migrationDirectory,
-  };
+  validateMigrationInitialization(project);
 
-  updateProjectConfiguration(tree, targetProject, {
-    root,
-    projectType: 'library',
-    sourceRoot: project.data.sourceRoot,
-    targets: {
-      'mongo-migrate:create': {
-        executor: '@spyre-dev/mongo-migrate:create',
-        options: migrationOptions,
-      },
-      'mongo-migrate:up': {
-        executor: '@spyre-dev/mongo-migrate:up',
-        options: migrationOptions,
-      },
-      'mongo-migrate:down': {
-        executor: '@spyre-dev/mongo-migrate:down',
-        options: migrationOptions,
-      },
-      'mongo-migrate:status': {
-        executor: '@spyre-dev/mongo-migrate:status',
-        options: migrationOptions,
-      },
-    },
-  });
+  const migrationDirectory = project.data['migrationDirectory'];
+
   addFiles(tree, {
     projectName: targetProject,
     projectRoot: root,
     targetProject,
     migrationDirectory,
+    schemaless,
   });
+
   await formatFiles(tree);
 }
