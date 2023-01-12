@@ -7,6 +7,11 @@
       "factory": "./src/generators/init/generator",
       "schema": "./src/generators/init/schema.json",
       "description": "initialize mongo migrations the in target project"
+    },
+    "create": {
+      "factory": "./src/generators/create/generator",
+      "schema": "./src/generators/create/schema.json",
+      "description": "create a new migration in the target project"
     }
   }
 }

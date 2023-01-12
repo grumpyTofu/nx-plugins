@@ -2,11 +2,11 @@ import { createTreeWithEmptyWorkspace } from '@nrwl/devkit/testing';
 import { Tree, readProjectConfiguration } from '@nrwl/devkit';
 
 import generator from './generator';
-import { MongoMigrateGeneratorSchema } from './schema';
+import { InitGeneratorSchema } from './schema';
 
 describe('mongo-migrate generator', () => {
   let appTree: Tree;
-  const options: MongoMigrateGeneratorSchema = { name: 'test' };
+  const options: InitGeneratorSchema = { targetProject: 'test' };
 
   beforeEach(() => {
     appTree = createTreeWithEmptyWorkspace();
