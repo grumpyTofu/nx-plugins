@@ -1,1 +1,1 @@
-export interface BuildExecutorSchema {} // eslint-disable-line
+export interface StatusExecutorSchema {} // eslint-disable-line
